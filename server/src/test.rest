@@ -1,0 +1,13 @@
+### get users
+GET http://localhost:4444/user
+
+### add user
+POST http://localhost:4444/user
+Content-Type: application/json
+
+{
+    "username": "ccc",
+        "email": "ccc@email.com",
+        "password": "ccc",
+        "avatar": ""
+}
