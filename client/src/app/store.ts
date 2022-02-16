@@ -1,7 +1,7 @@
 import { configureStore, Middleware } from '@reduxjs/toolkit'
-import boardSlice from './features/boardSlice'
-import cardSlice from './features/cardSlice'
-import listSlice from './features/listSlice'
+import boardSlice from '../features/board/boardSlice'
+import cardSlice from '../features/card/cardSlice'
+import listSlice from '../features/list/listSlice'
 
 const testMiddleware: Middleware = () => {
   return next => action => {

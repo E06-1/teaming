@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { deleteList } from "./listSlice";
-import type { RootState } from "../store";
-import type { teaming } from "../../../types";
+import { deleteList } from "../list/listSlice";
+import type { RootState } from "../../app/store";
+import type { teaming } from "../../../../types";
 
 // Define Type of state
 interface BoardState {
@@ -111,7 +111,7 @@ export const boardSlice = createSlice({
         userId: teaming.UserId;
       }>
     ) => {
-      state[action.payload.boardId].collaborators = state[
+      state.entries[action.payload.boardId].collaborators = state.entries[
         action.payload.boardId
       ].collaborators.filter((id) => id !== action.payload.userId);
     },

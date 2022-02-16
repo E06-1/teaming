@@ -1,6 +1,6 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import type { RootState } from "../store";
-import type { teaming } from "../../../types";
+import type { RootState } from "../../app/store";
+import type { teaming } from "../../../../types";
 
 interface CardState {
   ids: teaming.CardId[]

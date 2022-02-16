@@ -1,5 +1,5 @@
 import React from 'react';
-import type {teaming} from "../../../types";
+import type {teaming} from "../../../../types";
 
 interface BoardProps {
     id: teaming.BoardId;
