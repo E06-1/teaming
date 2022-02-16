@@ -1,0 +1,38 @@
+### get lists
+GET http://localhost:4444/list
+
+### add list
+POST http://localhost:4444/list
+Content-Type: application/json
+
+{
+    "header": "list2"
+}
+
+### add list
+POST http://localhost:4444/list
+Content-Type: application/json
+
+{
+    "header": "list3",
+    "cards":[
+        "620d31f534da5a9f3ba66457",
+        "620d320434da5a9f3ba66459"
+    ]
+}
+### get by id
+GET http://localhost:4444/list/620d4697b79dcfc886b9672d
+
+### delete by id
+DELETE http://localhost:4444/list/620d4697b79dcfc886b9672d
+
+### update by id
+PATCH http://localhost:4444/list/620d4688b79dcfc886b9672b
+Content-Type: application/json
+
+{
+     "header": "list2",
+    "cards":[
+        "620d31f534da5a9f3ba66457"
+    ]
+}

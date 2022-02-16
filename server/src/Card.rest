@@ -1,0 +1,24 @@
+### get cards
+GET http://localhost:4444/card
+
+### add card
+POST http://localhost:4444/card
+Content-Type: application/json
+
+{
+    "content": "card@3"
+}
+
+### get by id
+GET http://localhost:4444/card/620d320434da5a9f3ba66459
+
+### delete by id
+DELETE http://localhost:4444/card/620d321634da5a9f3ba6645b
+
+### update by id
+PATCH http://localhost:4444/card/620d32a334da5a9f3ba66462
+Content-Type: application/json
+
+{
+    "content":"card@3updated"
+}

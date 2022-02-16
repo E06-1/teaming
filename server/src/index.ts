@@ -4,6 +4,10 @@ import cors from 'cors';
 import mongoose from 'mongoose';
 import 'dotenv/config';
 import userRouter from './routes/User';
+import cardRouter from './routes/Card';
+import listRouter from './routes/List';
+import boardRouter from './routes/Board';
+import sessionRouter from './routes/Session';
 
 const app = express();
 app.use(cors())
@@ -27,7 +31,10 @@ db.once('open',()=>console.log('connected to MongoDB'));
 // routes
 
 app.use('/user',userRouter)
-
+app.use('/card', cardRouter)
+app.use('/list', listRouter)
+app.use('/board', boardRouter)
+app.use('/session',sessionRouter)
 
 
 

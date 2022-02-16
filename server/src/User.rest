@@ -1,0 +1,28 @@
+### get users
+GET http://localhost:4444/user
+
+### add user
+POST http://localhost:4444/user
+Content-Type: application/json
+
+{
+    "username": "ccc",
+        "email": "ccc@email.com",
+        "password": "ccc",
+        "avatar": ""
+}
+
+### get by id
+GET http://localhost:4444/user/620d211b0d9dd4d6567ec2a4
+
+### delete by id
+DELETE http://localhost:4444/user/620d27942d5ba33446853352
+
+### update by id
+PATCH http://localhost:4444/user/620d2842c240a83ee4638d5e
+Content-Type: application/json
+
+{
+    "email":"ccc_update@email.com",
+    "avatar":"http://www.image.com/myavatar.jpg"
+}
