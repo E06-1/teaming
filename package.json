@@ -2,7 +2,7 @@
   "name": "teaming",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
     "start": "run-p start:client start:server",
     "start:client": "npm run start --workspace=client",
