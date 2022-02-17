@@ -4,7 +4,7 @@ import type { RootState } from "../../app/store";
 import type { teaming } from "../../../../types";
 
 // Define Type of state
-interface BoardState {
+export interface BoardState {
   ids: teaming.BoardId[];
   entries: { [key: teaming.BoardId]: teaming.Board };
 }
@@ -20,11 +20,15 @@ export const boardSlice = createSlice({
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
+    overwrite: (state, action: PayloadAction<BoardState>) => action.payload,
 
-    createBoard: (state, action: PayloadAction<{ id: teaming.BoardId,name: string }>) => {
-      state.ids.push(action.payload.id);
-      state.entries[action.payload.id] = {
-        id: action.payload.id,
+    createBoard: (
+      state,
+      action: PayloadAction<{ boardId: teaming.BoardId; name: string }>
+    ) => {
+      state.ids.push(action.payload.boardId);
+      state.entries[action.payload.boardId] = {
+        id: action.payload.boardId,
         name: action.payload.name,
         lists: [],
         collaborators: [],
@@ -140,7 +144,6 @@ export const boardSlice = createSlice({
   },
 
   extraReducers: (builder) => {
-
     builder.addCase(deleteList, (state, action) => {
       state.ids.forEach((boardId) => {
         if (state.entries[boardId].lists.includes(action.payload.listId))
@@ -149,7 +152,6 @@ export const boardSlice = createSlice({
           );
       });
     });
-
   },
 });
 
@@ -163,10 +165,14 @@ export const {
   removeCollaborator,
   removeList,
   changeName,
-  moveListWithinBoard
+  moveListWithinBoard,
+  overwrite,
 } = boardSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
-export const selectBoard = (boardId: teaming.BoardId) => (state: RootState) => state.board.entries[boardId]
+export const selectBoard = (boardId: teaming.BoardId) => (state: RootState) =>
+  state.board.entries[boardId];
+export const selectBoardIds = (state: RootState) => state.board.ids;
+export const selectListIdsForBoard = (boardId: teaming.BoardId) => (state: RootState) => state.board.entries[boardId].lists
 
 export default boardSlice.reducer;
