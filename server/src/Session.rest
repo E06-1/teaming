@@ -1,0 +1,38 @@
+### get sessions
+GET http://localhost:4444/session
+
+### add session
+POST http://localhost:4444/session
+Content-Type: application/json
+
+{
+    "users": ["1"]
+}
+
+### add session
+POST http://localhost:4444/session
+Content-Type: application/json
+
+{
+    "users": ["1","2"],
+    "lists":[
+        "620d31f534da5a9f3ba66457"
+    ],
+    "boards":["620d31f534da5a9f3bcdc457"],
+    "cards":["1","2","3"]
+}
+### get by id
+GET http://localhost:4444/session/620d523118a8ce9c991ae5f5
+
+### delete by id
+DELETE http://localhost:4444/session/620d52b4ec035db258e75b14
+
+### update by id
+PATCH http://localhost:4444/session/620d52b2ec035db258e75b12
+Content-Type: application/json
+
+{
+
+   "boards":["1"],
+    "cards":["2","3"]
+}

@@ -1,0 +1,42 @@
+### get boards
+GET http://localhost:4444/board
+
+### add board
+POST http://localhost:4444/board
+Content-Type: application/json
+
+{
+    "name": "board2"
+}
+
+### add board
+POST http://localhost:4444/board
+Content-Type: application/json
+
+{
+    "name": "board3",
+    "lists":[
+        "620d31f534da5a9f3ba66457"
+    ],
+    "admins":["620d31f534da5a9f3bcdc457"]
+}
+### get by id
+GET http://localhost:4444/board/620d4d378e8c9931d9daffe9
+
+### delete by id
+DELETE http://localhost:4444/board/620d4ca58e8c9931d9daffe7
+
+### update by id
+PATCH http://localhost:4444/board/620d4c968e8c9931d9daffe5
+Content-Type: application/json
+
+{
+
+    "lists":[
+        "620d31f534da5a9f3ba66457"
+    ],
+    "collaborators":[
+        "620d320434da5a9f3ba66459"
+    ],
+    "admins":["620d31f534da5a9f3bcdc457"]
+}
