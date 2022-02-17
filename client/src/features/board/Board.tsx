@@ -1,5 +1,4 @@
-import { Container } from "@mui/material";
-import React from "react";
+import Container from "@mui/material/Container";
 import { v4 } from "uuid";
 import type { teaming } from "../../../../types";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";

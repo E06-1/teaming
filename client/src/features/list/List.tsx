@@ -1,16 +1,13 @@
-import {
-  Box,
-  List as MuiList,
-  ListItem,
-  ListItemButton,
-  ListSubheader,
-  Paper,
-  Card,
-} from "@mui/material";
+import MuiList from "@mui/material/List";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListSubheader from "@mui/material/ListSubheader";
+import Paper from "@mui/material/Paper";
+import Card from "@mui/material/Card";
 import ListItemIcon from "@mui/material/ListItemIcon";
-import Menu from "@mui/icons-material/Menu";
+import MoreVertIcon from "@mui/icons-material/MoreVert";
+import IconButton from "@mui/material/IconButton";
 import Add from "@mui/icons-material/Add";
-import React from "react";
 import { v4 } from "uuid";
 import type { teaming } from "../../../../types";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
@@ -35,9 +32,10 @@ function List({ id }: ListProps) {
       <MuiList>
         <ListItem sx={{ display: "flex", justifyContent: "space-between" }}>
           <ListSubheader>{header}</ListSubheader>
-          <Menu />
+          <IconButton aria-label="options">
+            <MoreVertIcon />
+          </IconButton>
         </ListItem>
-
         {cards.map((id) => (
           <ListItem key={id}>
             <Card>{id}</Card>
