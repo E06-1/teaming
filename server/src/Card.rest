@@ -5,8 +5,8 @@ GET http://localhost:4444/card
 POST http://localhost:4444/card
 Content-Type: application/json
 
-{
-    "content": "card@3"
+{   "_id":"123",
+    "content": "card@5"
 }
 
 ### get by id

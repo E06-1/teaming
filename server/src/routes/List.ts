@@ -5,7 +5,7 @@ import { Model } from "mongoose";
 const listRouter = express.Router();
 
 // get all
-listRouter.get("/", async (req, res) => {
+listRouter.get("/", async (req:express.Request, res:express.Response) => {
   try {
     const list = await List.find();
     res.json(list);
@@ -15,8 +15,9 @@ listRouter.get("/", async (req, res) => {
 });
 
 // create one
-listRouter.post("/", async (req, res) => {
+listRouter.post("/", async (req:express.Request, res:express.Response) => {
  const list = new List({
+   _id: req.body.id,
     header: req.body.header,
     cards: req.body.cards
   });
@@ -29,7 +30,7 @@ listRouter.post("/", async (req, res) => {
 });
 
 // get one by id
-listRouter.get("/:id", async (req, res) => {
+listRouter.get("/:id", async (req:express.Request, res:express.Response) => {
   let list: Model<any> | null = null;
   try {
     list = await List.findById(req.params.id);
@@ -43,7 +44,7 @@ listRouter.get("/:id", async (req, res) => {
 });
 
 //delete
-listRouter.delete("/:id", async (req, res) => {
+listRouter.delete("/:id", async (req:express.Request, res:express.Response) => {
   let result = null;
 
   result = await List.findByIdAndDelete(req.params.id);
@@ -55,7 +56,7 @@ listRouter.delete("/:id", async (req, res) => {
 });
 
 // update one
-listRouter.patch('/:id', async( req,res)=>{
+listRouter.patch('/:id', async( req:express.Request,res:express.Response)=>{
 
     let result = null;
     result = await List.findByIdAndUpdate(req.params.id, req.body)
@@ -69,9 +70,9 @@ export default listRouter;
 
 
 /*
-interface card {
-id: `card:string`;
-content: string;
-}
-
+ interface List {
+    id: ListId;
+    header: string;
+    cards: CardId[];
+  }
 */

@@ -4,7 +4,7 @@ import { Model } from "mongoose";
 const cardRouter = express.Router();
 
 // get all
-cardRouter.get("/", async (req, res) => {
+cardRouter.get("/", async (req:express.Request, res:express.Response) => {
   try {
     const cards = await Card.find();
     res.json(cards);
@@ -14,8 +14,9 @@ cardRouter.get("/", async (req, res) => {
 });
 
 // create one
-cardRouter.post("/", async (req, res) => {
+cardRouter.post("/", async (req:express.Request, res:express.Response) => {
  const cards = new Card({
+   _id: req.body.id,
     content: req.body.content,
   });
   try {
@@ -27,7 +28,7 @@ cardRouter.post("/", async (req, res) => {
 });
 
 // get one by id
-cardRouter.get("/:id", async (req, res) => {
+cardRouter.get("/:id", async (req:express.Request, res:express.Response) => {
   let cards: Model<any> | null = null;
   try {
     cards = await Card.findById(req.params.id);
@@ -41,7 +42,7 @@ cardRouter.get("/:id", async (req, res) => {
 });
 
 //delete
-cardRouter.delete("/:id", async (req, res) => {
+cardRouter.delete("/:id", async (req:express.Request, res:express.Response) => {
   let result = null;
 
   result = await Card.findByIdAndDelete(req.params.id);
@@ -53,7 +54,7 @@ cardRouter.delete("/:id", async (req, res) => {
 });
 
 // update one
-cardRouter.patch('/:id', async( req,res)=>{
+cardRouter.patch('/:id', async( req:express.Request,res:express.Response)=>{
 
     let result = null;
     result = await Card.findByIdAndUpdate(req.params.id, req.body)

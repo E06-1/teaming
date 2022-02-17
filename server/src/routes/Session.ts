@@ -1,13 +1,10 @@
 import express from "express";
-import List from "../schema/List";
-import Card from "../schema/Card";
 import { Model } from "mongoose";
-import Board from "../schema/Board";
 import Session from "../schema/Session";
 const sessionRouter = express.Router();
 
 // get all
-sessionRouter.get("/", async (req, res) => {
+sessionRouter.get("/", async (req:express.Request, res:express.Response) => {
   try {
     const board = await Session.find();
     res.json(board);
@@ -17,8 +14,9 @@ sessionRouter.get("/", async (req, res) => {
 });
 
 // create one
-sessionRouter.post("/", async (req, res) => {
+sessionRouter.post("/", async (req:express.Request, res:express.Response) => {
  const session = new Session({
+   _id: req.body.id,
     users: req.body.users,
     lists: req.body.lists,
     boards: req.body.boards,
@@ -33,7 +31,7 @@ sessionRouter.post("/", async (req, res) => {
 });
 
 // get one by id
-sessionRouter.get("/:id", async (req, res) => {
+sessionRouter.get("/:id", async (req:express.Request, res:express.Response) => {
   let session: Model<any> | null = null;
   try {
     session = await Session.findById(req.params.id);
@@ -47,7 +45,7 @@ sessionRouter.get("/:id", async (req, res) => {
 });
 
 //delete
-sessionRouter.delete("/:id", async (req, res) => {
+sessionRouter.delete("/:id", async (req:express.Request, res:express.Response) => {
   let result = null;
 
   result = await Session.findByIdAndDelete(req.params.id);
@@ -59,7 +57,7 @@ sessionRouter.delete("/:id", async (req, res) => {
 });
 
 // update one
-sessionRouter.patch('/:id', async( req,res)=>{
+sessionRouter.patch('/:id', async( req:express.Request,res:express.Response)=>{
 
     let result = null;
     result = await Session.findByIdAndUpdate(req.params.id, req.body)

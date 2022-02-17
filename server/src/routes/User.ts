@@ -6,7 +6,7 @@ import { Model } from "mongoose";
 const userRouter = express.Router();
 
 // get all
-userRouter.get("/", async (req, res) => {
+userRouter.get("/", async (req:express.Request, res:express.Response) => {
   try {
     const users = await User.find();
     res.json(users);
@@ -16,7 +16,7 @@ userRouter.get("/", async (req, res) => {
 });
 
 // create one
-userRouter.post("/", async (req, res) => {
+userRouter.post("/", async (req:express.Request, res:express.Response) => {
   const hash = crypto.createHash("md5").update(req.body.password).digest("hex");
   const usr = new User({
     username: req.body.username,
@@ -33,7 +33,7 @@ userRouter.post("/", async (req, res) => {
 });
 
 // get one by id
-userRouter.get("/:id", async (req, res) => {
+userRouter.get("/:id", async (req:express.Request, res:express.Response) => {
   let user: Model<any> | null = null;
   try {
     user = await User.findById(req.params.id);
@@ -47,7 +47,7 @@ userRouter.get("/:id", async (req, res) => {
 });
 
 //delete
-userRouter.delete("/:id", async (req, res) => {
+userRouter.delete("/:id", async (req:express.Request, res:express.Response) => {
   let result = null;
 
   result = await User.findByIdAndDelete(req.params.id);
@@ -59,7 +59,7 @@ userRouter.delete("/:id", async (req, res) => {
 });
 
 // update one
-userRouter.patch('/:id', async( req,res)=>{
+userRouter.patch('/:id', async( req:express.Request,res:express.Response)=>{
 
     let result = null;
     result = await User.findByIdAndUpdate(req.params.id, req.body)

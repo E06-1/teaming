@@ -1,12 +1,10 @@
 import express from "express";
-import List from "../schema/List";
-import Card from "../schema/Card";
 import { Model } from "mongoose";
 import Board from "../schema/Board";
 const boardRouter = express.Router();
 
 // get all
-boardRouter.get("/", async (req, res) => {
+boardRouter.get("/", async (req:express.Request, res:express.Response) => {
   try {
     const board = await Board.find();
     res.json(board);
@@ -16,8 +14,9 @@ boardRouter.get("/", async (req, res) => {
 });
 
 // create one
-boardRouter.post("/", async (req, res) => {
+boardRouter.post("/", async (req:express.Request, res:express.Response) => {
  const list = new Board({
+   _id: req.body.id,
     name: req.body.name,
     lists: req.body.lists,
     collaborators: req.body.collaborators,
@@ -32,7 +31,7 @@ boardRouter.post("/", async (req, res) => {
 });
 
 // get one by id
-boardRouter.get("/:id", async (req, res) => {
+boardRouter.get("/:id", async (req:express.Request, res:express.Response) => {
   let board: Model<any> | null = null;
   try {
     board = await Board.findById(req.params.id);
@@ -46,7 +45,7 @@ boardRouter.get("/:id", async (req, res) => {
 });
 
 //delete
-boardRouter.delete("/:id", async (req, res) => {
+boardRouter.delete("/:id", async (req:express.Request, res:express.Response) => {
   let result = null;
 
   result = await Board.findByIdAndDelete(req.params.id);
@@ -58,7 +57,7 @@ boardRouter.delete("/:id", async (req, res) => {
 });
 
 // update one
-boardRouter.patch('/:id', async( req,res)=>{
+boardRouter.patch('/:id', async( req:express.Request,res:express.Response)=>{
 
     let result = null;
     result = await Board.findByIdAndUpdate(req.params.id, req.body)
