@@ -25,7 +25,7 @@ function App() {
       const doneListId: teaming.ListId = `list:${v4()}`;
       dispatch(createList({listId: toDoListId, header: "To do"}))
       dispatch(createList({listId: inProgressListId, header: "In progress"}))
-      dispatch(createList({listId: doneListId, header: "Done"}))
+      dispatch(createList({listId: doneListId, header: "Done"})) 
 
       dispatch(addList({boardId, listId: toDoListId}))
       dispatch(addList({boardId, listId: inProgressListId}))
