@@ -3,7 +3,7 @@ import { deleteCard } from "../card/cardSlice";
 import type { RootState } from "../../app/store";
 import type { teaming } from "../../../../types";
 
-interface ListState {
+export interface ListState {
   ids: teaming.ListId[];
   entries: { [key: teaming.ListId]: teaming.List };
 }
@@ -19,6 +19,8 @@ export const listSlice = createSlice({
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
+    overwrite: (state, action: PayloadAction<ListState>) => action.payload,
+
     createList: (
       state,
       action: PayloadAction<{ listId: teaming.ListId; header: string }>
@@ -119,7 +121,6 @@ export const listSlice = createSlice({
   },
 
   extraReducers: (builder) => {
-
     builder.addCase(deleteCard, (state, action) => {
       state.ids.forEach((listId) => {
         if (state.entries[listId].cards.includes(action.payload.cardId))
@@ -128,7 +129,6 @@ export const listSlice = createSlice({
           );
       });
     });
-    
   },
 });
 
@@ -139,6 +139,8 @@ export const {
   removeCard,
   changeHeader,
   moveCardWithinList,
+  moveCardToList,
+  overwrite,
 } = listSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
