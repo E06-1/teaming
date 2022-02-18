@@ -5,12 +5,12 @@ GET http://localhost:4444/card
 POST http://localhost:4444/card
 Content-Type: application/json
 
-{   "id": "card:dwadjhwoiadjwoa"
+{   "id": "card:dwadjhwoiadjwoa",
     "content": "card@5"
 }
 
 ### get by id
-GET http://localhost:4444/card/620d320434da5a9f3ba66459
+GET http://localhost:4444/card/card:dwadjhwoiadjwoa
 
 ### delete by id
 DELETE http://localhost:4444/card/620d321634da5a9f3ba6645b
