@@ -1,10 +1,10 @@
 import MuiList from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
+import Typography from "@mui/material/Typography"
 import ListSubheader from "@mui/material/ListSubheader";
 import Paper from "@mui/material/Paper";
-import Card from "@mui/material/Card";
-import ListItemIcon from "@mui/material/ListItemIcon";
+import Card from "../card/Card";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import IconButton from "@mui/material/IconButton";
 import Add from "@mui/icons-material/Add";
@@ -28,27 +28,31 @@ function List({ id }: ListProps) {
     dispatch(addCard({ listId: id, cardId }));
   };
   return (
-    <Paper elevation={1} className="List">
+    <Paper elevation={1} className="List" sx={{flexShrink: "0"}}>
       <MuiList>
-        <ListItem sx={{ display: "flex", justifyContent: "space-between" }}>
-          <ListSubheader>{header}</ListSubheader>
+        <ListItem sx={{ display: "flex", justifyContent: "space-between", whiteSpace: "nowrap"}}>
+          <Typography>{header}</Typography>
           <IconButton aria-label="options">
             <MoreVertIcon />
           </IconButton>
         </ListItem>
         {cards.map((id) => (
           <ListItem key={id}>
-            <Card>{id}</Card>
+            <Card id={id} />
           </ListItem>
         ))}
-        <ListItem>
-          <ListItemButton onClick={handleCreateCard}>
-            <ListItemIcon>
-              <Add />
-            </ListItemIcon>{" "}
-            Add Card
-          </ListItemButton>
-        </ListItem>
+        <ListItemButton
+          onClick={handleCreateCard}
+          sx={{
+            display: "flex",
+            whiteSpace: "nowrap",
+            flexWrap: "nowrap",
+            alignItems: "center",
+          }}
+        >
+          <Add />
+          Add Card
+        </ListItemButton>
       </MuiList>
     </Paper>
   );

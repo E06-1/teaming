@@ -25,7 +25,7 @@ function Board({ id }: BoardProps) {
   return (
     <div className="Board">
       <h2>{name}</h2>
-      <Container sx={{display: "flex"}}>    
+      <Container sx={{display: "flex", gap: "1rem"}}>    
         {lists.map((id) => (
           <List key={id} id={id} />
         ))}
