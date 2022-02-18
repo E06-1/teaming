@@ -6,6 +6,7 @@ POST http://localhost:4444/board
 Content-Type: application/json
 
 {
+    "id": "board:dwadjhwoiadjwoa"
     "name": "board2"
 }
 
