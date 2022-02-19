@@ -1,35 +1,40 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { deleteCard } from "../card/cardSlice";
+import { createCard, deleteCard } from "../card/cardsSlice";
 import type { RootState } from "../../app/store";
 import type { teaming } from "../../../../types";
 
-export interface ListState {
+export interface ListsState {
   ids: teaming.ListId[];
   entries: { [key: teaming.ListId]: teaming.List };
 }
 
 // Define the initial state using that type
-const initialState: ListState = {
+const initialState: ListsState = {
   ids: [],
   entries: {},
 };
 
 export const listSlice = createSlice({
-  name: "list",
+  name: "lists",
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
-    overwrite: (state, action: PayloadAction<ListState>) => action.payload,
+    overwrite: (state, action: PayloadAction<ListsState>) => action.payload,
 
     createList: (
       state,
-      action: PayloadAction<{ listId: teaming.ListId; header: string }>
+      action: PayloadAction<{
+        listId: teaming.ListId;
+        onBoardId: teaming.BoardId;
+        header: string;
+      }>
     ) => {
       state.ids.push(action.payload.listId);
       state.entries[action.payload.listId] = {
         id: action.payload.listId,
         header: action.payload.header,
         cards: [],
+        boardId: action.payload.onBoardId,
       };
     },
 
@@ -40,7 +45,13 @@ export const listSlice = createSlice({
       state.entries[action.payload.listId].header = action.payload.header;
     },
 
-    deleteList: (state, action: PayloadAction<{ listId: teaming.ListId }>) => {
+    deleteList: (
+      state,
+      action: PayloadAction<{
+        listId: teaming.ListId;
+        fromBoardId: teaming.BoardId;
+      }>
+    ) => {
       state.ids = state.ids.filter(
         (listId) => listId !== action.payload.listId
       );
@@ -88,7 +99,7 @@ export const listSlice = createSlice({
         //Add the listId on the correct position
         action.payload.cardId,
         //Add the rest
-        ...withoutList.slice(action.payload.toPos + 1),
+        ...withoutList.slice(action.payload.toPos),
       ];
     },
 
@@ -122,12 +133,13 @@ export const listSlice = createSlice({
 
   extraReducers: (builder) => {
     builder.addCase(deleteCard, (state, action) => {
-      state.ids.forEach((listId) => {
-        if (state.entries[listId].cards.includes(action.payload.cardId))
-          state.entries[listId].cards = state.entries[listId].cards.filter(
-            (listId) => listId !== action.payload.cardId
-          );
-      });
+      state.entries[action.payload.fromListId].cards = state.entries[
+        action.payload.fromListId
+      ].cards.filter((cardId) => cardId !== action.payload.cardId);
+    });
+
+    builder.addCase(createCard, (state, action) => {
+      state.entries[action.payload.onListId].cards.push(action.payload.cardId);
     });
   },
 });
@@ -145,6 +157,11 @@ export const {
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectList = (listId: teaming.ListId) => (state: RootState) =>
-  state.list.entries[listId];
+  state.lists.entries[listId];
+export const selectListPosition =
+  (listId: teaming.ListId) => (state: RootState) => {
+    const boardId = state.lists.entries[listId].boardId;
+    return state.boards.entries[boardId].lists.indexOf(listId);
+  };
 
 export default listSlice.reducer;

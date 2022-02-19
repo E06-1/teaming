@@ -1,23 +1,24 @@
 import { teaming } from "../../../types";
-import { BoardState } from "../features/board/boardSlice";
-import {validate} from "uuid";
-import { ListState } from "../features/list/listSlice";
-import { CardState } from "../features/card/cardSlice";
+import { BoardsState } from "../features/board/boardsSlice";
+import { validate } from "uuid";
+import { ListsState } from "../features/list/listsSlice";
+import { CardsState } from "../features/card/cardsSlice";
 import { RootState } from "../app/store";
 
 export function isRootState(unknown: unknown): unknown is RootState {
-  if(!isObjectWithKeys(unknown, {list: 1, card: 1, board: 1})) return false;
-  if(!isBoardState(unknown.board)) return false;
-  if(!isCardState(unknown.card)) return false;
-  if(!isListState(unknown.list)) return false;
+  if (!isObjectWithKeys(unknown, { lists: 1, cards: 1, boards: 1 }))
+    return false;
+  if (!isBoardsState(unknown.boards)) return false;
+  if (!isCardState(unknown.cards)) return false;
+  if (!isListsState(unknown.lists)) return false;
 
   return true;
 }
 
-export function isBoardState(unknown: unknown): unknown is BoardState {
-  if(!isObjectWithKeys(unknown, {ids: 1, entries: 1})) return false;
+export function isBoardsState(unknown: unknown): unknown is BoardsState {
+  if (!isObjectWithKeys(unknown, { ids: 1, entries: 1 })) return false;
   if (!isBoardIdArray(unknown.ids)) return false;
-  if (!isBoardStateEntriesObject(unknown.entries)) return false;
+  if (!isBoardsStateEntriesObject(unknown.entries)) return false;
 
   return true;
 }
@@ -31,7 +32,16 @@ export function isBoardId(unknown: unknown): unknown is teaming.BoardId {
 }
 
 export function isBoard(unknown: unknown): unknown is teaming.Board {
-  if(!isObjectWithKeys(unknown, {id: 1, name: 1, lists: 1, collaborators: 1, admins: 1})) return false;
+  if (
+    !isObjectWithKeys(unknown, {
+      id: 1,
+      name: 1,
+      lists: 1,
+      collaborators: 1,
+      admins: 1,
+    })
+  )
+    return false;
   if (!isBoardId(unknown.id)) return false;
   if (!(typeof unknown.name === "string")) return false;
   if (!isListIdArray(unknown.lists)) return false;
@@ -49,7 +59,7 @@ export function isBoardIdArray(unknown: unknown): unknown is teaming.BoardId[] {
   return true;
 }
 
-export function isBoardStateEntriesObject(
+export function isBoardsStateEntriesObject(
   unknown: unknown
 ): unknown is { [key: teaming.BoardId]: teaming.Board } {
   if (!(typeof unknown === "object")) return false;
@@ -112,15 +122,15 @@ export function isCardIdArray(unknown: unknown): unknown is teaming.CardId[] {
   return true;
 }
 
-export function isListState(unknown: unknown): unknown is ListState {
-  if(!isObjectWithKeys(unknown, {ids: 1, entries: 1})) return false;
+export function isListsState(unknown: unknown): unknown is ListsState {
+  if (!isObjectWithKeys(unknown, { ids: 1, entries: 1 })) return false;
   if (!isListIdArray(unknown.ids)) return false;
-  if (!isListStateEntriesObject(unknown.entries)) return false;
+  if (!isListsStateEntriesObject(unknown.entries)) return false;
 
   return true;
 }
 
-export function isCardState(unknown: unknown): unknown is CardState {
+export function isCardState(unknown: unknown): unknown is CardsState {
   if (!(typeof unknown === "object")) return false;
   if (unknown === null) return false;
   if (!("ids" in unknown)) return false;
@@ -129,12 +139,12 @@ export function isCardState(unknown: unknown): unknown is CardState {
   const c1 = unknown as { ids: unknown; entries: unknown };
 
   if (!isCardIdArray(c1.ids)) return false;
-  if (!isCardStateEntriesObject(c1.entries)) return false;
+  if (!isCardsStateEntriesObject(c1.entries)) return false;
 
   return true;
 }
 
-export function isListStateEntriesObject(
+export function isListsStateEntriesObject(
   unknown: unknown
 ): unknown is { [key: teaming.ListId]: teaming.List } {
   if (!(typeof unknown === "object")) return false;
@@ -150,17 +160,16 @@ export function isListStateEntriesObject(
 }
 
 export function isList(unknown: unknown): unknown is teaming.List {
-  if(!isObjectWithKeys(unknown, {id: 1, header: 1, cards: 1})) return false;
+  if (!isObjectWithKeys(unknown, { id: 1, header: 1, cards: 1 })) return false;
   if (!isListId(unknown.id)) return false;
   if (!(typeof unknown.header === "string")) return false;
   if (!isCardIdArray(unknown.cards)) return false;
   return true;
 }
 
-export function isCardStateEntriesObject(
+export function isCardsStateEntriesObject(
   unknown: unknown
 ): unknown is { [key: teaming.CardId]: teaming.Card } {
-
   if (!(typeof unknown === "object")) return false;
   if (unknown === null) return false;
 
@@ -174,14 +183,17 @@ export function isCardStateEntriesObject(
 }
 
 export function isCard(unknown: unknown): unknown is teaming.Card {
-  if(!isObjectWithKeys(unknown, {id: 1, content: 1})) return false;
+  if (!isObjectWithKeys(unknown, { id: 1, content: 1 })) return false;
   if (!isCardId(unknown.id)) return false;
   if (!(typeof unknown.content === "string")) return false;
 
   return true;
 }
 
-export function isObjectWithKeys<T extends {}>(unknown: unknown, keys: T): unknown is {[key in keyof typeof keys]: unknown} {
+export function isObjectWithKeys<T extends {}>(
+  unknown: unknown,
+  keys: T
+): unknown is { [key in keyof typeof keys]: unknown } {
   if (!(typeof unknown === "object")) return false;
   if (unknown === null) return false;
   for (const key in keys) {

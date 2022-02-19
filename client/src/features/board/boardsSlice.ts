@@ -1,26 +1,26 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { deleteList } from "../list/listSlice";
+import { createList, deleteList } from "../list/listsSlice";
 import type { RootState } from "../../app/store";
 import type { teaming } from "../../../../types";
 
 // Define Type of state
-export interface BoardState {
+export interface BoardsState {
   ids: teaming.BoardId[];
   entries: { [key: teaming.BoardId]: teaming.Board };
 }
 
 // Define the initial state using that type
-const initialState: BoardState = {
+const initialState: BoardsState = {
   ids: [],
   entries: {},
 };
 
 export const boardSlice = createSlice({
-  name: "board",
+  name: "boards",
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
-    overwrite: (state, action: PayloadAction<BoardState>) => action.payload,
+    overwrite: (state, action: PayloadAction<BoardsState>) => action.payload,
 
     createBoard: (
       state,
@@ -92,7 +92,7 @@ export const boardSlice = createSlice({
         //Add the listId on the correct position
         action.payload.listId,
         //Add the rest
-        ...withoutList.slice(action.payload.toPos + 1),
+        ...withoutList.slice(action.payload.toPos),
       ];
     },
 
@@ -145,12 +145,12 @@ export const boardSlice = createSlice({
 
   extraReducers: (builder) => {
     builder.addCase(deleteList, (state, action) => {
-      state.ids.forEach((boardId) => {
-        if (state.entries[boardId].lists.includes(action.payload.listId))
-          state.entries[boardId].lists = state.entries[boardId].lists.filter(
-            (listId) => listId !== action.payload.listId
-          );
-      });
+      state.entries[action.payload.fromBoardId].lists = state.entries[
+        action.payload.fromBoardId
+      ].lists.filter((listId) => listId !== action.payload.listId);
+    });
+    builder.addCase(createList, (state, action) => {
+      state.entries[action.payload.onBoardId].lists.push(action.payload.listId);
     });
   },
 });
@@ -171,8 +171,10 @@ export const {
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectBoard = (boardId: teaming.BoardId) => (state: RootState) =>
-  state.board.entries[boardId];
-export const selectBoardIds = (state: RootState) => state.board.ids;
-export const selectListIdsForBoard = (boardId: teaming.BoardId) => (state: RootState) => state.board.entries[boardId].lists
+  state.boards.entries[boardId];
+export const selectBoardIds = (state: RootState) => state.boards.ids;
+export const selectListIdsForBoard =
+  (boardId: teaming.BoardId) => (state: RootState) =>
+    state.boards.entries[boardId].lists;
 
 export default boardSlice.reducer;

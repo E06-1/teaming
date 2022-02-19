@@ -1,12 +1,19 @@
 import React, { useEffect } from "react";
-import { addList, createBoard, overwrite as overwriteBoardState, selectBoardIds } from "../features/board/boardSlice";
+import {
+  createBoard,
+  overwrite as overwriteBoardState,
+  selectBoardIds,
+} from "../features/board/boardsSlice";
 import "./App.css";
 import { useAppDispatch, useAppSelector } from "./hooks";
-import {v4} from "uuid";
+import { v4 } from "uuid";
 import Board from "../features/board/Board";
 import { isRootState } from "../common/typeChecks";
-import { createList, overwrite as overwriteListState } from "../features/list/listSlice";
-import { overwrite as overwriteCardState } from "../features/card/cardSlice";
+import {
+  createList,
+  overwrite as overwriteListState,
+} from "../features/list/listsSlice";
+import { overwrite as overwriteCardState } from "../features/card/cardsSlice";
 import { teaming } from "../../../types";
 import FormDialog from "../components/formDialog/FormDialog";
 import { Avatar, IconButton } from "@mui/material";
@@ -26,17 +33,23 @@ function App() {
       const toDoListId: teaming.ListId = `list:${v4()}`;
       const inProgressListId: teaming.ListId = `list:${v4()}`;
       const doneListId: teaming.ListId = `list:${v4()}`;
-      dispatch(createList({ listId: toDoListId, header: "To do" }));
-      dispatch(createList({ listId: inProgressListId, header: "In progress" }));
-      dispatch(createList({ listId: doneListId, header: "Done" }));
-
-      dispatch(addList({ boardId, listId: toDoListId }));
-      dispatch(addList({ boardId, listId: inProgressListId }));
-      dispatch(addList({ boardId, listId: doneListId }));
+      dispatch(
+        createList({ listId: toDoListId, onBoardId: boardId, header: "To do" })
+      );
+      dispatch(
+        createList({
+          listId: inProgressListId,
+          onBoardId: boardId,
+          header: "In progress",
+        })
+      );
+      dispatch(
+        createList({ listId: doneListId, onBoardId: boardId, header: "Done" })
+      );
     } else {
-      dispatch(overwriteBoardState(state.board));
-      dispatch(overwriteListState(state.list));
-      dispatch(overwriteCardState(state.card));
+      dispatch(overwriteBoardState(state.boards));
+      dispatch(overwriteListState(state.lists));
+      dispatch(overwriteCardState(state.cards));
     }
   }, [dispatch]);
 

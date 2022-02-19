@@ -1,6 +1,6 @@
 import type { teaming } from "../../../../types";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { changeContent, deleteCard, selectCard } from "./cardSlice";
+import { changeContent, deleteCard, selectCard } from "./cardsSlice";
 import Typography from "@mui/material/Typography";
 import MuiCard from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
@@ -18,16 +18,16 @@ interface CardProps {
 }
 
 function Card({ id }: CardProps) {
-  const { content } = useAppSelector(selectCard(id));
+  const { content, listId } = useAppSelector(selectCard(id));
   const [editing, setEditing] = useState(false);
-  const [editedContent, setEditedContent] = useState(content); 
+  const [editedContent, setEditedContent] = useState(content);
   const dispatch = useAppDispatch();
 
   // dispatch(changeContent({ cardId: id, content: "" }));
   // dispatch(deleteCard({ cardId: id }));
   const handleSave = () => {
     dispatch(changeContent({ cardId: id, content: editedContent }));
-    setEditing(false)
+    setEditing(false);
   };
 
   return (
@@ -42,12 +42,12 @@ function Card({ id }: CardProps) {
         {editing ? (
           <>
             <TextField
-              value={editedContent} 
+              value={editedContent}
               onChange={(e) => {
-                setEditedContent(e.target.value); 
+                setEditedContent(e.target.value);
               }}
               size="small"
-              sx={{ width: "max-content"}}
+              sx={{ width: "max-content" }}
             />
             <Box>
               <IconButton onClick={handleSave} aria-label="save">
@@ -60,15 +60,15 @@ function Card({ id }: CardProps) {
           </>
         ) : (
           <>
-          <Typography variant="body2" > 
-            {content}
-            </Typography> 
+            <Typography variant="body2">{content}</Typography>
             <Box>
               <IconButton onClick={() => setEditing(true)} aria-label="edit">
                 <EditIcon />
               </IconButton>
               <IconButton
-                onClick={() => dispatch(deleteCard({ cardId: id }))}
+                onClick={() =>
+                  dispatch(deleteCard({ cardId: id, fromListId: listId }))
+                }
                 aria-label="delete"
               >
                 <DeleteIcon />
