@@ -8,10 +8,13 @@ import { isRootState } from "../common/typeChecks";
 import { createList, overwrite as overwriteListState } from "../features/list/listSlice";
 import { overwrite as overwriteCardState } from "../features/card/cardSlice";
 import { teaming } from "../../../types";
+import FormDialog from "../components/formDialog/FormDialog";
+import { Avatar, IconButton } from "@mui/material";
 
 function App() {
   const dispatch = useAppDispatch();
   const boardIds = useAppSelector(selectBoardIds);
+  const handleLogout = () => {};
 
   //Load Boards from local storage if available, if not initialize an Empty Board
   useEffect(() => {
@@ -23,24 +26,33 @@ function App() {
       const toDoListId: teaming.ListId = `list:${v4()}`;
       const inProgressListId: teaming.ListId = `list:${v4()}`;
       const doneListId: teaming.ListId = `list:${v4()}`;
-      dispatch(createList({listId: toDoListId, header: "To do"}))
-      dispatch(createList({listId: inProgressListId, header: "In progress"}))
-      dispatch(createList({listId: doneListId, header: "Done"})) 
+      dispatch(createList({ listId: toDoListId, header: "To do" }));
+      dispatch(createList({ listId: inProgressListId, header: "In progress" }));
+      dispatch(createList({ listId: doneListId, header: "Done" }));
 
-      dispatch(addList({boardId, listId: toDoListId}))
-      dispatch(addList({boardId, listId: inProgressListId}))
-      dispatch(addList({boardId, listId: doneListId}))
-    }else{
-      dispatch(overwriteBoardState(state.board))
-      dispatch(overwriteListState(state.list))
-      dispatch(overwriteCardState(state.card))
+      dispatch(addList({ boardId, listId: toDoListId }));
+      dispatch(addList({ boardId, listId: inProgressListId }));
+      dispatch(addList({ boardId, listId: doneListId }));
+    } else {
+      dispatch(overwriteBoardState(state.board));
+      dispatch(overwriteListState(state.list));
+      dispatch(overwriteCardState(state.card));
     }
   }, [dispatch]);
 
-
   return (
     <div className="App">
-      <header></header>
+      <header>
+        <h1>
+          <span className="green">T</span>ea<span className="white">mi</span>ng
+        </h1>
+        <div className="navPanel">
+          <FormDialog />
+          <IconButton onClick={handleLogout}>
+            <Avatar>H</Avatar>
+          </IconButton>
+        </div>
+      </header>
       <main>{boardIds[0] ? <Board id={boardIds[0]} /> : null}</main>
     </div>
   );
