@@ -1,2 +1,28 @@
 .App {
 }
+.App header{
+    background-color: #ddd;
+    display:flex;
+    padding: 0 1em 0.5em 1em;
+    justify-content: space-between;
+    align-items: center;
+    
+}
+.App header h1{
+    text-transform: uppercase;
+}
+.App header .navPanel{
+    width: auto;
+    display:flex;
+    align-items: center;
+}
+.App header .navPanel div{
+    margin-left: 0.5 em;
+}
+.App header .green{
+    color:green;
+    font-size: 3rem;
+}
+.App header .white{
+    color:blueviolet;
+}

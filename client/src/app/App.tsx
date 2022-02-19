@@ -15,10 +15,13 @@ import {
 } from "../features/list/listsSlice";
 import { overwrite as overwriteCardState } from "../features/card/cardsSlice";
 import { teaming } from "../../../types";
+import FormDialog from "../components/formDialog/FormDialog";
+import { Avatar, IconButton } from "@mui/material";
 
 function App() {
   const dispatch = useAppDispatch();
   const boardIds = useAppSelector(selectBoardIds);
+  const handleLogout = () => {};
 
   //Load Boards from local storage if available, if not initialize an Empty Board
   useEffect(() => {
@@ -52,7 +55,17 @@ function App() {
 
   return (
     <div className="App">
-      <header></header>
+      <header>
+        <h1>
+          <span className="green">T</span>ea<span className="white">mi</span>ng
+        </h1>
+        <div className="navPanel">
+          <FormDialog />
+          <IconButton onClick={handleLogout}>
+            <Avatar>H</Avatar>
+          </IconButton>
+        </div>
+      </header>
       <main>{boardIds[0] ? <Board id={boardIds[0]} /> : null}</main>
     </div>
   );
