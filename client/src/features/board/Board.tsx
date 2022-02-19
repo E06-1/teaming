@@ -3,8 +3,8 @@ import { v4 } from "uuid";
 import type { teaming } from "../../../../types";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import List from "../list/List";
-import { createList } from "../list/listSlice";
-import { addList, selectBoard } from "./boardSlice";
+import { createList } from "../list/listsSlice";
+import { selectBoard } from "./boardsSlice";
 
 interface BoardProps {
   id: teaming.BoardId;
@@ -12,20 +12,18 @@ interface BoardProps {
 
 function Board({ id }: BoardProps) {
   const dispatch = useAppDispatch();
-  const { name, lists, collaborators, admins } = useAppSelector(
-    selectBoard(id)
-  );
+  const { name, lists, collaborators } = useAppSelector(selectBoard(id));
 
   const handleCreateList = () => {
     const listId: teaming.ListId = `list:${v4()}`;
-    dispatch(createList({ listId, header: "new" }));
-    dispatch(addList({ boardId: id, listId }));
+    dispatch(createList({ listId, onBoardId: id, header: "new" }));
   };
+  console.log("render");
 
   return (
     <div className="Board">
       <h2>{name}</h2>
-      <Container sx={{display: "flex", gap: "1rem"}}>    
+      <Container sx={{ display: "flex", gap: "1rem" }}>
         {lists.map((id) => (
           <List key={id} id={id} />
         ))}

@@ -16,6 +16,7 @@ export namespace teaming {
     id: ListId;
     header: string;
     cards: CardId[];
+    boardId: BoardId;
   }
 
   interface Board {
@@ -29,5 +30,6 @@ export namespace teaming {
   interface Card {
     id: CardId;
     content: string;
+    listId: ListId;
   }
 }
