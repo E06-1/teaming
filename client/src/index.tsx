@@ -5,13 +5,30 @@ import App from "./app/App";
 import reportWebVitals from "./reportWebVitals";
 import { Provider } from "react-redux";
 import { store } from "./app/store";
+import {
+  ThemeProvider,
+  createTheme,
+  responsiveFontSizes,
+} from "@mui/material/styles";
+import { DndProvider } from "react-dnd";
+import { HTML5Backend } from "react-dnd-html5-backend";
 
-
+const theme = responsiveFontSizes(
+  createTheme({
+    palette: {
+      mode: "light",
+    },
+  })
+);
 
 ReactDOM.render(
   <React.StrictMode>
     <Provider store={store}>
-      <App />
+      <ThemeProvider theme={theme}>
+        <DndProvider backend={HTML5Backend}>
+          <App />
+        </DndProvider>
+      </ThemeProvider>
     </Provider>
   </React.StrictMode>,
   document.getElementById("root")

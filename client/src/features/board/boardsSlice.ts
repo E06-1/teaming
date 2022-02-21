@@ -169,6 +169,8 @@ export const {
   overwrite,
 } = boardSlice.actions;
 
+export const boardActions = boardSlice.actions;
+
 // Other code such as selectors can use the imported `RootState` type
 export const selectBoard = (boardId: teaming.BoardId) => (state: RootState) =>
   state.boards.entries[boardId];

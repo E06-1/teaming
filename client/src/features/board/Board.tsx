@@ -1,7 +1,9 @@
 import Container from "@mui/material/Container";
+import { useDrop } from "react-dnd";
 import { v4 } from "uuid";
 import type { teaming } from "../../../../types";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import { DnDTypes } from "../dnd/dndtypes";
 import List from "../list/List";
 import { createList } from "../list/listsSlice";
 import { selectBoard } from "./boardsSlice";
@@ -18,10 +20,13 @@ function Board({ id }: BoardProps) {
     const listId: teaming.ListId = `list:${v4()}`;
     dispatch(createList({ listId, onBoardId: id, header: "new" }));
   };
-  console.log("render");
+
+  const [, drop] = useDrop({
+    accept: "list",
+  });
 
   return (
-    <div className="Board">
+    <div className="Board" ref={drop}>
       <h2>{name}</h2>
       <Container sx={{ display: "flex", gap: "1rem" }}>
         {lists.map((id) => (

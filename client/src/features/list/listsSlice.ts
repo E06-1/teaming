@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createCard, deleteCard } from "../card/cardsSlice";
 import type { RootState } from "../../app/store";
 import type { teaming } from "../../../../types";
+import { createCard, deleteCard } from "../card/cardsSlice";
 
 export interface ListsState {
   ids: teaming.ListId[];
@@ -154,6 +154,8 @@ export const {
   moveCardToList,
   overwrite,
 } = listSlice.actions;
+
+export const listActions = listSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectList = (listId: teaming.ListId) => (state: RootState) =>

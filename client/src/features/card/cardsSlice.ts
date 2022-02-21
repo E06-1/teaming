@@ -13,7 +13,7 @@ const initialState: CardsState = {
   entries: {},
 };
 
-export const listSlice = createSlice({
+export const cardsSlice = createSlice({
   name: "cards",
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
@@ -34,6 +34,13 @@ export const listSlice = createSlice({
         content: action.payload.content,
         listId: action.payload.onListId,
       };
+    },
+
+    changeList: (
+      state,
+      action: PayloadAction<{ cardId: teaming.CardId; listId: teaming.ListId }>
+    ) => {
+      state.entries[action.payload.cardId].listId = action.payload.listId;
     },
 
     changeContent: (
@@ -58,8 +65,10 @@ export const listSlice = createSlice({
   },
 });
 
-export const { createCard, changeContent, overwrite, deleteCard } =
-  listSlice.actions;
+export const { createCard, changeContent, overwrite, deleteCard, changeList } =
+  cardsSlice.actions;
+
+export const cardActions = cardsSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectCard = (cardId: teaming.CardId) => (state: RootState) =>
@@ -70,4 +79,4 @@ export const selectCardPosition =
     return state.lists.entries[listId].cards.indexOf(cardId);
   };
 
-export default listSlice.reducer;
+export default cardsSlice.reducer;
