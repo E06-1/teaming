@@ -1,3 +1,4 @@
+import  Box  from "@mui/material/Box"; 
 import Container from "@mui/material/Container";
 import { useDrop } from "react-dnd";
 import { v4 } from "uuid";
@@ -26,7 +27,7 @@ function Board({ id }: BoardProps) {
   });
 
   return (
-    <div className="Board" ref={drop}>
+    <Box sx={{ backgroundColor:'primary.main'}} className="Board" ref={drop}>
       <h2>{name}</h2>
       <Container sx={{ display: "flex", gap: "1rem" }}>
         {lists.map((id) => (
@@ -34,8 +35,8 @@ function Board({ id }: BoardProps) {
         ))}
         <input type="button" value="Create List" onClick={handleCreateList} />
       </Container>
-    </div>
-  );
+    </Box>
+  ); 
 }
 
 export default Board;

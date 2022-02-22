@@ -34,6 +34,7 @@ function Card({ id }: CardProps) {
   const [editedContent, setEditedContent] = useState(content);
   const dispatch = useAppDispatch();
   const position = useAppSelector(selectCardPosition(id));
+  //const [currentItem, setCurrentItem]= useState(" "); 
 
   // dispatch(changeContent({ cardId: id, content: "" }));
   // dispatch(deleteCard({ cardId: id }));
@@ -41,6 +42,11 @@ function Card({ id }: CardProps) {
     dispatch(changeContent({ cardId: id, content: editedContent }));
     setEditing(false);
   };
+
+  const handleCancel =()=> {
+     setEditing(false)
+     setEditedContent(content)
+  } 
 
   const ref = useRef<HTMLDivElement>(null);
   const [{ isDragging }, drag] = useDrag<
@@ -109,6 +115,7 @@ function Card({ id }: CardProps) {
           alignItems: "center",
         }}
       >
+
         {editing ? (
           <>
             <TextField
@@ -123,9 +130,9 @@ function Card({ id }: CardProps) {
               <IconButton onClick={handleSave} aria-label="save">
                 <CheckIcon />
               </IconButton>
-              <IconButton onClick={() => setEditing(false)} aria-label="cancel">
-                <EditOffIcon />
-              </IconButton>
+              <IconButton onClick={handleCancel} aria-label="cancel">
+                <EditOffIcon /> 
+              </IconButton>  
             </Box>
           </>
         ) : (
