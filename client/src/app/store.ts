@@ -2,6 +2,7 @@ import { configureStore, Middleware } from "@reduxjs/toolkit";
 import boardSlice from "../features/board/boardsSlice";
 import cardSlice from "../features/card/cardsSlice";
 import listSlice from "../features/list/listsSlice";
+import userSlice from "../features/user/userSlice";
 
 //Middleware should forward the action via Websocket Connection to the Backend, needs to be implemented
 const forwardAction: Middleware = () => {
@@ -21,6 +22,7 @@ export const store = configureStore({
     lists: listSlice,
     cards: cardSlice,
     boards: boardSlice,
+    user: userSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(forwardAction),

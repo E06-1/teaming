@@ -8,6 +8,7 @@ import cardRouter from './routes/Card';
 import listRouter from './routes/List';
 import boardRouter from './routes/Board';
 import sessionRouter from './routes/Session';
+import loginRouter from './routes/Login';
 
 const app = express();
 app.use(cors())
@@ -35,7 +36,7 @@ app.use('/card', cardRouter)
 app.use('/list', listRouter)
 app.use('/board', boardRouter)
 app.use('/session',sessionRouter)
-
+app.use('/login',loginRouter)
 
 
 
