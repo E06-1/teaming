@@ -18,6 +18,7 @@ import { teaming } from "../../../types";
 import FormDialog from "../components/formDialog/FormDialog";
 import { Avatar, IconButton } from "@mui/material";
 import { logout, selectUser } from "../features/user/userSlice";
+import Register from "../features/register/Register";
 
 function App() {
   const dispatch = useAppDispatch();
@@ -38,7 +39,11 @@ function App() {
       const inProgressListId: teaming.ListId = `list:${v4()}`;
       const doneListId: teaming.ListId = `list:${v4()}`;
       dispatch(
-        createList({ listId: toDoListId, onBoardId: boardId, header: "To do" })
+        createList({
+          listId: toDoListId,
+          onBoardId: boardId,
+          header: "To do",
+        })
       );
       dispatch(
         createList({
@@ -71,12 +76,13 @@ function App() {
           ) : (
             <div>
               <IconButton onClick={handleLogout}>
-                <Avatar src={user[0].avatar !== "" ? user[0].avatar : ""}>
-                  {user[0].username[0].toUpperCase()}
+                <Avatar src={user.avatar !== "" ? user.avatar : ""}>
+                  {user.username.toUpperCase()}
                 </Avatar>
               </IconButton>
             </div>
           )}
+          {user === null ? <Register /> : null}
         </div>
       </header>
       <main>{boardIds[0] ? <Board id={boardIds[0]} /> : null}</main>

@@ -2,8 +2,8 @@ import express from "express";
 import User from "../schema/User";
 import crypto from "crypto";
 import "dotenv/config";
-import { Model } from "mongoose";
-import userRouter from "./User";
+import jwt from "jsonwebtoken";
+
 const loginRouter = express.Router();
 
 // // get all
@@ -17,26 +17,21 @@ const loginRouter = express.Router();
 // });
 
 // create one
-loginRouter.post("/", async (req:express.Request, res:express.Response) => {
+loginRouter.post("/", async (req: express.Request, res: express.Response) => {
   const hash = crypto.createHash("md5").update(req.body.password).digest("hex");
-    try {
-      const user = await User.find({email:req.body.email});
-      if(user !== []){
-        if(user[0]?.password === hash){
-          res.json(user)
-        }else{
-          res.status(500).json({message: "Password is not correct!!!"})
-        }
-        
-      }
-     // res.json(user)
-
-    } catch (error:any) {
-      return res.status(500).json({ message: error.message });
-    }
+  try {
+    const user = await User.findOne({
+      email: req.body.email,
+      password: hash,
+    }).exec();
+    if (!user) return res.sendStatus(401);
+    if (!process.env.SECRET_KEY) throw new Error("Unable to get key from .env");
+    res.json(jwt.sign(user.toObject(), process.env.SECRET_KEY));
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
 });
 export default loginRouter;
-
 
 /*
 interface user {

@@ -2,17 +2,16 @@ import type { teaming } from "../../../../types";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import {
   changeContent,
-  changeList,
   deleteCard,
   selectCard,
-  selectCardPosition,
+  switchCardPositions,
 } from "./cardsSlice";
 import Typography from "@mui/material/Typography";
 import MuiCard from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import IconButton from "@mui/material/IconButton";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import EditIcon from "@mui/icons-material/Edit";
 import { Box } from "@mui/material";
 import EditOffIcon from "@mui/icons-material/EditOff";
@@ -22,31 +21,33 @@ import { useDrag, useDrop } from "react-dnd";
 import { Identifier } from "dnd-core";
 import { DnDTypes, DnDItems } from "../dnd/dndtypes";
 import { pointerIsDeepInside } from "../../common/utils";
-import { moveCardToList } from "../list/listsSlice";
+import { allowDnd, denyDnd, selectIsDnDAllowed } from "../dnd/dndSlice";
 
 interface CardProps {
   id: teaming.CardId;
 }
 
 function Card({ id }: CardProps) {
-  const { content, listId } = useAppSelector(selectCard(id));
+  const { content, listId, pos } = useAppSelector(selectCard(id));
   const [editing, setEditing] = useState(false);
   const [editedContent, setEditedContent] = useState(content);
+  const isDnDAllowed = useAppSelector(selectIsDnDAllowed);
   const dispatch = useAppDispatch();
-  const position = useAppSelector(selectCardPosition(id));
-  //const [currentItem, setCurrentItem]= useState(" "); 
+  //const [currentItem, setCurrentItem]= useState(" ");
 
   // dispatch(changeContent({ cardId: id, content: "" }));
   // dispatch(deleteCard({ cardId: id }));
   const handleSave = () => {
     dispatch(changeContent({ cardId: id, content: editedContent }));
     setEditing(false);
+    dispatch(allowDnd());
   };
 
-  const handleCancel =()=> {
-     setEditing(false)
-     setEditedContent(content)
-  } 
+  const handleCancel = () => {
+    setEditing(false);
+    dispatch(allowDnd());
+    setEditedContent(content);
+  };
 
   const ref = useRef<HTMLDivElement>(null);
   const [{ isDragging }, drag] = useDrag<
@@ -55,11 +56,12 @@ function Card({ id }: CardProps) {
     { isDragging: boolean }
   >({
     type: DnDTypes.Card,
-    item: { id, fromListId: listId },
+    item: { id, fromListId: listId, fromPos: pos },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
     isDragging: (monitor) => monitor.getItem().id === id,
+    canDrag: isDnDAllowed,
   });
 
   const [{ handlerId }, drop] = useDrop<
@@ -78,22 +80,14 @@ function Card({ id }: CardProps) {
       if (
         pointerIsDeepInside({ unit: "%", x: 2, y: 2 }, clientRect, clientOffset)
       ) {
-        dispatch(
-          moveCardToList({
-            cardId: item.id,
-            fromListId: item.fromListId,
-            toListId: listId,
-            toPos: position,
-          })
-        );
-
-        dispatch(
-          changeList({
-            cardId: item.id,
-            listId: listId,
-          })
-        );
-        item.fromListId = listId;
+        if (item.fromListId === listId) {
+          dispatch(
+            switchCardPositions({
+              cardId1: item.id,
+              cardId2: id,
+            })
+          );
+        }
       }
     },
     collect: (monitor) => ({ handlerId: monitor.getHandlerId() }),
@@ -115,7 +109,6 @@ function Card({ id }: CardProps) {
           alignItems: "center",
         }}
       >
-
         {editing ? (
           <>
             <TextField
@@ -131,15 +124,21 @@ function Card({ id }: CardProps) {
                 <CheckIcon />
               </IconButton>
               <IconButton onClick={handleCancel} aria-label="cancel">
-                <EditOffIcon /> 
-              </IconButton>  
+                <EditOffIcon />
+              </IconButton>
             </Box>
           </>
         ) : (
           <>
             <Typography variant="body2">{content}</Typography>
             <Box>
-              <IconButton onClick={() => setEditing(true)} aria-label="edit">
+              <IconButton
+                onClick={() => {
+                  setEditing(true);
+                  dispatch(denyDnd());
+                }}
+                aria-label="edit"
+              >
                 <EditIcon />
               </IconButton>
               <IconButton

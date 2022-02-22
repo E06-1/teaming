@@ -1,28 +1,23 @@
+import { teaming } from "../../../types";
+import mongoose from "mongoose";
 
-import mongoose from 'mongoose';
-
-
-const boardSchema = new mongoose.Schema({
-    _id: String, //https://mongoosejs.com/docs/guide.html#_id ---> const schema = new Schema({ _id: Number }); should work, so i guess String as well.
-    name:{
-        type: String, 
-        required:true
-    },
-    lists:{
-        type:[String],
-        required:false
-    },
-    collaborators:{
-        type:[String],
-        required:false
-    },
-    admins:{
-        type:[String],
-        required:false
-    }
+const boardSchema = new mongoose.Schema<teaming.Board>({
+  _id: String, //https://mongoosejs.com/docs/guide.html#_id ---> const schema = new Schema({ _id: Number }); should work, so i guess String as well.
+  name: {
+    type: String,
+    required: true,
+  },
+  collaborators: {
+    type: [String],
+    required: false,
+  },
+  admins: {
+    type: [String],
+    required: false,
+  },
 });
 
-const Board = mongoose.model("Board", boardSchema)
+const Board = mongoose.model<teaming.Board>("Board", boardSchema);
 export default Board;
 
 /*

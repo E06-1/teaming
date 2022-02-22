@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../../app/store";
 import type { teaming } from "../../../../types";
-import { createCard, deleteCard } from "../card/cardsSlice";
+import { deleteBoard } from "../board/boardsSlice";
 
 export interface ListsState {
   ids: teaming.ListId[];
@@ -29,13 +29,39 @@ export const listSlice = createSlice({
         header: string;
       }>
     ) => {
+      const pos = Object.values(state.entries).reduce(
+        (max, list) => (list.pos >= max ? list.pos + 1 : max),
+        0
+      );
+      console.log(pos);
+
       state.ids.push(action.payload.listId);
       state.entries[action.payload.listId] = {
-        id: action.payload.listId,
+        _id: action.payload.listId,
         header: action.payload.header,
-        cards: [],
         boardId: action.payload.onBoardId,
+        pos,
       };
+    },
+
+    moveListToPos: (
+      state,
+      action: PayloadAction<{ listId: teaming.ListId; toPos: number }>
+    ) => {
+      state.entries[action.payload.listId].pos = action.payload.toPos;
+    },
+
+    switchListPositions: (
+      state,
+      action: PayloadAction<{
+        listId1: teaming.ListId;
+        listId2: teaming.ListId;
+      }>
+    ) => {
+      const oldPos = state.entries[action.payload.listId1].pos;
+      state.entries[action.payload.listId1].pos =
+        state.entries[action.payload.listId2].pos;
+      state.entries[action.payload.listId2].pos = oldPos;
     },
 
     changeHeader: (
@@ -49,7 +75,6 @@ export const listSlice = createSlice({
       state,
       action: PayloadAction<{
         listId: teaming.ListId;
-        fromBoardId: teaming.BoardId;
       }>
     ) => {
       state.ids = state.ids.filter(
@@ -57,89 +82,16 @@ export const listSlice = createSlice({
       );
       delete state.entries[action.payload.listId];
     },
-
-    addCard: (
-      state,
-      action: PayloadAction<{
-        listId: teaming.ListId;
-        cardId: teaming.CardId;
-      }>
-    ) => {
-      state.entries[action.payload.listId].cards.push(action.payload.cardId);
-    },
-
-    removeCard: (
-      state,
-      action: PayloadAction<{
-        listId: teaming.ListId;
-        cardId: teaming.CardId;
-      }>
-    ) => {
-      state.entries[action.payload.listId].cards = state.entries[
-        action.payload.listId
-      ].cards.filter((id) => id !== action.payload.cardId);
-    },
-
-    moveCardWithinList: (
-      state,
-      action: PayloadAction<{
-        listId: teaming.ListId;
-        cardId: teaming.CardId;
-        toPos: number;
-      }>
-    ) => {
-      //Algorithm not effective for Boards with many lists. But we won't have so many.
-      //Removing the list id
-      const withoutList = state.entries[action.payload.listId].cards.filter(
-        (cardId) => cardId !== action.payload.cardId
-      );
-      state.entries[action.payload.listId].cards = [
-        //Add all other listIds until the new position
-        ...withoutList.slice(0, action.payload.toPos),
-        //Add the listId on the correct position
-        action.payload.cardId,
-        //Add the rest
-        ...withoutList.slice(action.payload.toPos),
-      ];
-    },
-
-    moveCardToList: (
-      state,
-      action: PayloadAction<{
-        fromListId: teaming.ListId;
-        toListId: teaming.ListId;
-        cardId: teaming.CardId;
-        toPos: number;
-      }>
-    ) => {
-      //Remove Card from fromList
-      state.entries[action.payload.fromListId].cards = state.entries[
-        action.payload.fromListId
-      ].cards.filter((cardId) => cardId !== action.payload.cardId);
-
-      //Add Card to toList
-      state.entries[action.payload.toListId].cards = [
-        ...state.entries[action.payload.toListId].cards.slice(
-          0,
-          action.payload.toPos
-        ),
-        action.payload.cardId,
-        ...state.entries[action.payload.toListId].cards.slice(
-          action.payload.toPos
-        ),
-      ];
-    },
   },
-
   extraReducers: (builder) => {
-    builder.addCase(deleteCard, (state, action) => {
-      state.entries[action.payload.fromListId].cards = state.entries[
-        action.payload.fromListId
-      ].cards.filter((cardId) => cardId !== action.payload.cardId);
-    });
-
-    builder.addCase(createCard, (state, action) => {
-      state.entries[action.payload.onListId].cards.push(action.payload.cardId);
+    builder.addCase(deleteBoard, (state, action) => {
+      const ListIds = Object.values(state.entries)
+        .filter((list) => list.boardId === action.payload.boardId)
+        .map((list) => list._id);
+      ListIds.forEach((id) => {
+        delete state.entries[id];
+      });
+      state.ids = state.ids.filter((id) => !ListIds.includes(id));
     });
   },
 });
@@ -147,12 +99,10 @@ export const listSlice = createSlice({
 export const {
   createList,
   deleteList,
-  addCard,
-  removeCard,
   changeHeader,
-  moveCardWithinList,
-  moveCardToList,
   overwrite,
+  moveListToPos,
+  switchListPositions,
 } = listSlice.actions;
 
 export const listActions = listSlice.actions;
@@ -160,10 +110,11 @@ export const listActions = listSlice.actions;
 // Other code such as selectors can use the imported `RootState` type
 export const selectList = (listId: teaming.ListId) => (state: RootState) =>
   state.lists.entries[listId];
-export const selectListPosition =
-  (listId: teaming.ListId) => (state: RootState) => {
-    const boardId = state.lists.entries[listId].boardId;
-    return state.boards.entries[boardId].lists.indexOf(listId);
-  };
+export const selectCardIdsOnList =
+  (listId: teaming.ListId) => (state: RootState) =>
+    Object.values(state.cards.entries)
+      .filter((card) => card.listId === listId)
+      .sort((a, b) => a.pos - b.pos)
+      .map((card) => card._id);
 
 export default listSlice.reducer;
