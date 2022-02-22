@@ -71,7 +71,9 @@ function App() {
           ) : (
             <div>
               <IconButton onClick={handleLogout}>
-                <Avatar>{user[0].username[0].toUpperCase()}</Avatar>
+                <Avatar src={user[0].avatar !== "" ? user[0].avatar : ""}>
+                  {user[0].username[0].toUpperCase()}
+                </Avatar>
               </IconButton>
             </div>
           )}

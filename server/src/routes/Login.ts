@@ -21,7 +21,16 @@ loginRouter.post("/", async (req:express.Request, res:express.Response) => {
   const hash = crypto.createHash("md5").update(req.body.password).digest("hex");
     try {
       const user = await User.find({email:req.body.email});
-      res.json(user)
+      if(user !== []){
+        if(user[0]?.password === hash){
+          res.json(user)
+        }else{
+          res.status(500).json({message: "Password is not correct!!!"})
+        }
+        
+      }
+     // res.json(user)
+
     } catch (error:any) {
       return res.status(500).json({ message: error.message });
     }
