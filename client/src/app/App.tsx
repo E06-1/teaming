@@ -17,11 +17,15 @@ import { overwrite as overwriteCardState } from "../features/card/cardsSlice";
 import { teaming } from "../../../types";
 import FormDialog from "../components/formDialog/FormDialog";
 import { Avatar, IconButton } from "@mui/material";
+import { logout, selectUser } from "../features/user/userSlice";
 
 function App() {
   const dispatch = useAppDispatch();
   const boardIds = useAppSelector(selectBoardIds);
-  const handleLogout = () => {};
+  const handleLogout = () => {
+    dispatch(logout());
+  };
+  const user: any = useAppSelector(selectUser);
 
   //Load Boards from local storage if available, if not initialize an Empty Board
   useEffect(() => {
@@ -60,10 +64,19 @@ function App() {
           <span className="green">T</span>ea<span className="white">mi</span>ng
         </h1>
         <div className="navPanel">
-          <FormDialog />
-          <IconButton onClick={handleLogout}>
-            <Avatar>H</Avatar>
-          </IconButton>
+          {user === null ? (
+            <FormDialog />
+          ) : user.length === 0 ? (
+            <FormDialog />
+          ) : (
+            <div>
+              <IconButton onClick={handleLogout}>
+                <Avatar src={user[0].avatar !== "" ? user[0].avatar : ""}>
+                  {user[0].username[0].toUpperCase()}
+                </Avatar>
+              </IconButton>
+            </div>
+          )}
         </div>
       </header>
       <main>{boardIds[0] ? <Board id={boardIds[0]} /> : null}</main>
