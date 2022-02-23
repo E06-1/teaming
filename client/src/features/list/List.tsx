@@ -4,20 +4,26 @@ import ListItemButton from "@mui/material/ListItemButton";
 import Typography from "@mui/material/Typography";
 import Paper from "@mui/material/Paper";
 import Card from "../card/Card";
-import MoreVertIcon from "@mui/icons-material/MoreVert";
+import Delete from "@mui/icons-material/Delete";
 import IconButton from "@mui/material/IconButton";
 import Add from "@mui/icons-material/Add";
 import { v4 } from "uuid";
 import type { teaming } from "../../../../types";
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
-import { changeList, createCard } from "../card/cardsSlice";
-import { moveCardToList, selectList, selectListPosition } from "./listsSlice";
+import { createCard, moveCardToList } from "../card/cardsSlice";
+import {
+  changeHeader,
+  deleteList,
+  selectCardIdsOnList,
+  selectList,
+  switchListPositions,
+} from "./listsSlice";
 import { useDrag, useDrop } from "react-dnd";
 import type { Identifier } from "dnd-core";
-import { moveListWithinBoard } from "../board/boardsSlice";
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { pointerIsDeepInside } from "../../common/utils";
 import { DnDTypes, DnDItems } from "../dnd/dndtypes";
+import { allowDnd, denyDnd, selectIsDnDAllowed } from "../dnd/dndSlice";
 
 interface ListProps {
   id: teaming.ListId;
@@ -25,12 +31,21 @@ interface ListProps {
 
 function List({ id }: ListProps) {
   const dispatch = useAppDispatch();
-  const { cards, header, boardId } = useAppSelector(selectList(id));
-  const position = useAppSelector(selectListPosition(id));
+  const { header, pos } = useAppSelector(selectList(id));
+  const cards = useAppSelector(selectCardIdsOnList(id));
+  const isDnDAllowed = useAppSelector(selectIsDnDAllowed);
+
+  const [editing, setEditing] = useState(false);
 
   const handleCreateCard = () => {
     const cardId: teaming.CardId = `card:${v4()}`;
-    dispatch(createCard({ cardId, onListId: id, content: "new content" }));
+    dispatch(
+      createCard({
+        cardId,
+        onListId: id,
+        content: "new content",
+      })
+    );
   };
 
   const ref = useRef<HTMLDivElement>(null);
@@ -43,10 +58,11 @@ function List({ id }: ListProps) {
     }
   >({
     type: DnDTypes.List,
-    item: { id },
+    item: { id, fromPos: pos },
     collect: (monitor) => ({
       isDragging: monitor.isDragging(),
     }),
+    canDrag: isDnDAllowed,
   });
 
   const [{ handlerId }, drop] = useDrop<
@@ -58,6 +74,7 @@ function List({ id }: ListProps) {
     hover: (item, monitor) => {
       if (!monitor.canDrop()) return;
       if (!ref || !ref.current) return;
+      if (pos === item.fromPos) return;
       if (item.id === id) return;
       const clientRect = ref.current.getBoundingClientRect();
       const clientOffset = monitor.getClientOffset();
@@ -69,15 +86,14 @@ function List({ id }: ListProps) {
           clientOffset
         )
       ) {
-        dispatch(
-          moveListWithinBoard({ boardId, listId: item.id, toPos: position })
-        );
+        dispatch(switchListPositions({ listId1: id, listId2: item.id }));
+        item.fromPos = pos;
       }
     },
     collect: (monitor) => ({ handlerId: monitor.getHandlerId() }),
   });
 
-  const [{}, dropCard] = useDrop<
+  const [, dropCard] = useDrop<
     DnDItems.Card,
     void,
     { handlerId: Identifier | null }
@@ -100,22 +116,37 @@ function List({ id }: ListProps) {
         dispatch(
           moveCardToList({
             cardId: item.id,
-            fromListId: item.fromListId,
             toListId: id,
-            toPos: cards.length,
-          })
-        );
-
-        dispatch(
-          changeList({
-            cardId: item.id,
-            listId: id,
           })
         );
         item.fromListId = id;
       }
     },
   });
+
+  const headerRef = useRef<HTMLSpanElement>(null);
+
+  useEffect(() => {
+    if (!headerRef || !headerRef.current) return;
+    const listener = (e: MouseEvent) => {
+      console.log("target", e.target);
+      console.log("current", headerRef.current);
+      if (e.target !== headerRef.current) setEditing(false);
+    };
+    if (editing) {
+      headerRef.current.focus();
+      dispatch(denyDnd());
+      window.addEventListener("mousedown", listener);
+    } else {
+      dispatch(allowDnd());
+      if (headerRef.current.innerText !== header)
+        dispatch(
+          changeHeader({ listId: id, header: headerRef.current.innerText })
+        );
+      window.removeEventListener("mousedown", listener);
+    }
+    return () => window.removeEventListener("mousedown", listener);
+  }, [editing, dispatch, header, id]);
 
   dropCard(drag(drop(ref)));
   return (
@@ -134,9 +165,25 @@ function List({ id }: ListProps) {
             whiteSpace: "nowrap",
           }}
         >
-          <Typography>{header}</Typography>
-          <IconButton aria-label="options">
-            <MoreVertIcon />
+          <Typography
+            contentEditable={editing}
+            onDoubleClick={() => {
+              setEditing(true);
+              headerRef.current?.focus();
+            }}
+            onChange={(e) => console.log(e)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") setEditing(false);
+            }}
+            ref={headerRef}
+          >
+            {header}
+          </Typography>
+          <IconButton
+            aria-label="delete"
+            onClick={() => dispatch(deleteList({ listId: id }))}
+          >
+            <Delete />
           </IconButton>
         </ListItem>
         {cards.map((id) => (
