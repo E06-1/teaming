@@ -10,6 +10,7 @@ import boardRouter from "./routes/Board";
 import sessionRouter from "./routes/Session";
 import loginRouter from "./routes/Login";
 import path from "path";
+import imageRouter from "./routes/Image";
 
 const app = express();
 app.use(cors());
@@ -37,5 +38,6 @@ app.use("/list", listRouter);
 app.use("/board", boardRouter);
 app.use("/session", sessionRouter);
 app.use("/login", loginRouter);
+app.use("/image", imageRouter); 
 
 app.listen(PORT, () => console.log(`Server is running on port ${PORT}`));
