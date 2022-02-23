@@ -1,0 +1,14 @@
+
+### login user
+POST http://localhost:4444/login
+Content-Type: application/json
+
+{
+    "email":"aaa@email.com",
+    "password": "aaa"
+}
+
+### get user from token
+GET http://localhost:4444/login
+Content-Type: "application/json"
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiYWFhQGVtYWlsLmNvbSIsImlhdCI6MTY0NTU0ODc0MH0.D89cAlUO5XokCn8zRaSvl6D8-Ysiq0pWHh7CvFFpJe0

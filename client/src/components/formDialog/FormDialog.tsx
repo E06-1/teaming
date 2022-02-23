@@ -15,7 +15,7 @@ import FacebookIcon from "@mui/icons-material/Facebook";
 import GitHubIcon from "@mui/icons-material/GitHub";
 import axios from "axios";
 import { isFocusable } from "@testing-library/user-event/dist/utils";
-import { login, selectUser } from "../../features/user/userSlice";
+import { fetchUser, login, selectUser } from "../../features/user/userSlice";
 import { useDispatch, useSelector } from "react-redux";
 const FormDialog = (props: any) => {
   const [open, setOpen] = useState(false);
@@ -44,16 +44,20 @@ const FormDialog = (props: any) => {
     if (password !== "") setVPass(true);
   };
   const handleValid = async () => {
-    const tmp = await axios
-      .post(
-        "http://localhost:4444/login",
-        { email: email, password: password },
-        { headers: { "Content-Type": "application/json" } }
-      )
-      .then((res: any) => {
-        dispatch(login(res.data));
-      });
-    return tmp;
+    dispatch(login({ email: email, password: password }));
+    console.log("user from local storage = ", user);
+    dispatch(fetchUser({ email: email, password: password }));
+    // const tmp = await axios
+    //   .post(
+    //     "http://localhost:4444/login",
+    //     { email: email, password: password },
+    //     { headers: { "Content-Type": "application/json" } }
+    //   )
+    //   .then((res: any) => {
+    //     console.log(res.data);
+    //     dispatch(login({email:email, password:password}));
+    //   });
+    // return tmp;
   };
   const handleSubmit = async (e: any) => {
     e.preventDefault();

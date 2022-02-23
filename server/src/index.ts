@@ -23,7 +23,13 @@ app.get('/', (req,res)=>{
 
 
 // connect to db
-mongoose.connect(DB_URL);
+try {
+     mongoose.connect(DB_URL);
+} catch (error) {
+    console.log('DB is not connected')
+    process.exit(1);
+}
+
 const db = mongoose.connection;
 db.on('error',(err:any)=>console.error(err));
 db.once('open',()=>console.log('connected to MongoDB'));
