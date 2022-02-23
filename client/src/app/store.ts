@@ -1,6 +1,7 @@
 import { configureStore, Middleware } from "@reduxjs/toolkit";
 import boardSlice from "../features/board/boardsSlice";
 import cardSlice from "../features/card/cardsSlice";
+import dndSlice from "../features/dnd/dndSlice";
 import listSlice from "../features/list/listsSlice";
 import userSlice from "../features/user/userSlice";
 
@@ -23,13 +24,15 @@ export const store = configureStore({
     cards: cardSlice,
     boards: boardSlice,
     user: userSlice,
+    dnd: dndSlice,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(forwardAction),
 });
 
 const saveToLocalStorage = async () => {
-  localStorage.setItem("state", JSON.stringify(store.getState()));
+  const { boards, lists, cards } = store.getState();
+  localStorage.setItem("state", JSON.stringify({ boards, lists, cards }));
 };
 
 store.subscribe(saveToLocalStorage);

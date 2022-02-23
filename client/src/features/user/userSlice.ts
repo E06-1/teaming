@@ -1,15 +1,19 @@
+<<<<<<< HEAD
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import axios from "axios";
 import { RootState } from '../../app/store';
+=======
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { teaming } from "../../../../types";
+import { RootState } from "../../app/store";
+>>>>>>> ef4f616e3650a0a7ad80de7cf0772a3704207a0e
 
-interface IUser{
-    value: any;
+export interface UserState {
+  value: teaming.User | null;
+  token: string | null;
 }
 
-const init: IUser={
-    value: null
-}
-
+<<<<<<< HEAD
 const getFromLocal = ()=>{
     let current_user = null;
     try{
@@ -80,8 +84,32 @@ const userSlice = createSlice({
             state.value = action.payload;
         })
     }
+=======
+const init: UserState = {
+  value: null,
+  token: null,
+};
+
+const userSlice = createSlice({
+  name: "user",
+  initialState: init,
+  reducers: {
+    login: (
+      state,
+      action: PayloadAction<{ value: teaming.User; token: string }>
+    ) => {
+      state.value = action.payload.value;
+      state.token = action.payload.token;
+    },
+    logout: (state) => {
+      state.value = null;
+      state.token = null;
+    },
+  },
+>>>>>>> ef4f616e3650a0a7ad80de7cf0772a3704207a0e
 });
 
 export default userSlice.reducer;
-export const {login,logout} = userSlice.actions;
-export const selectUser = (state:RootState) => state.user.value;
+export const { login, logout } = userSlice.actions;
+export const selectUser = (state: RootState) => state.user.value;
+export const selectToken = (state: RootState) => state.user.token;

@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { createList, deleteList } from "../list/listsSlice";
 import type { RootState } from "../../app/store";
 import type { teaming } from "../../../../types";
 
@@ -28,9 +27,8 @@ export const boardSlice = createSlice({
     ) => {
       state.ids.push(action.payload.boardId);
       state.entries[action.payload.boardId] = {
-        id: action.payload.boardId,
+        _id: action.payload.boardId,
         name: action.payload.name,
-        lists: [],
         collaborators: [],
         admins: [],
       };
@@ -49,51 +47,6 @@ export const boardSlice = createSlice({
     ) => {
       state.ids = state.ids.filter((id) => id !== action.payload.boardId);
       delete state.entries[action.payload.boardId];
-    },
-
-    addList: (
-      state,
-      action: PayloadAction<{
-        boardId: teaming.BoardId;
-        listId: teaming.ListId;
-      }>
-    ) => {
-      state.entries[action.payload.boardId].lists.push(action.payload.listId);
-    },
-
-    removeList: (
-      state,
-      action: PayloadAction<{
-        boardId: teaming.BoardId;
-        listId: teaming.ListId;
-      }>
-    ) => {
-      state.entries[action.payload.boardId].lists = state.entries[
-        action.payload.boardId
-      ].lists.filter((id) => id !== action.payload.listId);
-    },
-
-    moveListWithinBoard: (
-      state,
-      action: PayloadAction<{
-        boardId: teaming.BoardId;
-        listId: teaming.ListId;
-        toPos: number;
-      }>
-    ) => {
-      //Algorithm not effective for Boards with many lists. But we won't have so many.
-      //Removing the list id
-      const withoutList = state.entries[action.payload.boardId].lists.filter(
-        (listId) => listId !== action.payload.listId
-      );
-      state.entries[action.payload.boardId].lists = [
-        //Add all other listIds until the new position
-        ...withoutList.slice(0, action.payload.toPos),
-        //Add the listId on the correct position
-        action.payload.listId,
-        //Add the rest
-        ...withoutList.slice(action.payload.toPos),
-      ];
     },
 
     addCollaborator: (
@@ -142,39 +95,29 @@ export const boardSlice = createSlice({
       ].admins.filter((id) => id !== action.payload.userId);
     },
   },
-
-  extraReducers: (builder) => {
-    builder.addCase(deleteList, (state, action) => {
-      state.entries[action.payload.fromBoardId].lists = state.entries[
-        action.payload.fromBoardId
-      ].lists.filter((listId) => listId !== action.payload.listId);
-    });
-    builder.addCase(createList, (state, action) => {
-      state.entries[action.payload.onBoardId].lists.push(action.payload.listId);
-    });
-  },
 });
 
 export const {
   createBoard,
   deleteBoard,
   addAdmin,
-  addList,
   addCollaborator,
-  removeAdmin,
   removeCollaborator,
-  removeList,
   changeName,
-  moveListWithinBoard,
   overwrite,
 } = boardSlice.actions;
+
+export const boardActions = boardSlice.actions;
 
 // Other code such as selectors can use the imported `RootState` type
 export const selectBoard = (boardId: teaming.BoardId) => (state: RootState) =>
   state.boards.entries[boardId];
 export const selectBoardIds = (state: RootState) => state.boards.ids;
-export const selectListIdsForBoard =
+export const selectListIdsOnBoard =
   (boardId: teaming.BoardId) => (state: RootState) =>
-    state.boards.entries[boardId].lists;
+    Object.values(state.lists.entries)
+      .filter((list) => list.boardId === boardId)
+      .sort((a, b) => a.pos - b.pos)
+      .map((list) => list._id);
 
 export default boardSlice.reducer;

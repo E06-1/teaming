@@ -3,8 +3,8 @@ import User from "../schema/User";
 import crypto from "crypto";
 import jwt from 'jsonwebtoken'
 import "dotenv/config";
-import { Model } from "mongoose";
-import userRouter from "./User";
+import jwt from "jsonwebtoken";
+
 const loginRouter = express.Router();
 
 // // get all
@@ -35,8 +35,9 @@ const authenticateToken = (req:any, res:express.Response, next:any) =>{
 const generateAccessToken = (user:any)=>
 jwt.sign({name:user},AT)//, {expiresIn: 60*20} )
 // create one
-loginRouter.post("/", async (req:express.Request, res:express.Response) => {
+loginRouter.post("/", async (req: express.Request, res: express.Response) => {
   const hash = crypto.createHash("md5").update(req.body.password).digest("hex");
+<<<<<<< HEAD
 
 
   let refresh_tokens: string[] = []
@@ -63,6 +64,19 @@ loginRouter.post("/", async (req:express.Request, res:express.Response) => {
     } catch (error:any) {
       return res.status(500).json({ message: error.message });
     }
+=======
+  try {
+    const user = await User.findOne({
+      email: req.body.email,
+      password: hash,
+    }).exec();
+    if (!user) return res.sendStatus(401);
+    if (!process.env.SECRET_KEY) throw new Error("Unable to get key from .env");
+    res.json(jwt.sign(user.toObject(), process.env.SECRET_KEY));
+  } catch (error: any) {
+    return res.status(500).json({ message: error.message });
+  }
+>>>>>>> ef4f616e3650a0a7ad80de7cf0772a3704207a0e
 });
 
 // get user
@@ -82,7 +96,6 @@ loginRouter.get("/", authenticateToken, async (req:any, res:express.Response)=>{
 
 
 export default loginRouter;
-
 
 /*
 interface user {
