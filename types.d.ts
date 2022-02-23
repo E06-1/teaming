@@ -1,35 +1,37 @@
+import { Types } from "mongoose";
+
 export namespace teaming {
-    
-  type UserId = `user:${string}`;
+  type UserId = Types.ObjectId;
   type ListId = `list:${string}`;
   type BoardId = `board:${string}`;
   type CardId = `card:${string}`;
 
   interface User {
-    id: UserId;
+    _id: UserId;
     avatar: string;
     username: string;
+    email: string;
     password: string;
   }
 
   interface List {
-    id: ListId;
+    _id: ListId;
     header: string;
-    cards: CardId[];
     boardId: BoardId;
+    pos: number;
   }
 
   interface Board {
-    id: BoardId;
+    _id: BoardId;
     name: string;
-    lists: ListId[];
     collaborators: UserId[];
     admins: UserId[];
   }
 
   interface Card {
-    id: CardId;
+    _id: CardId;
     content: string;
     listId: ListId;
+    pos: number;
   }
 }
