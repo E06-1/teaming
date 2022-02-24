@@ -2,6 +2,7 @@ import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../../app/store";
 import type { teaming } from "../../../../types";
 import { deleteBoard } from "../board/boardsSlice";
+import { isList, isListsState } from "../../common/typeChecks";
 
 export interface ListsState {
   ids: teaming.ListId[];
@@ -19,7 +20,11 @@ export const listSlice = createSlice({
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
-    overwrite: (state, action: PayloadAction<ListsState>) => action.payload,
+    overwrite: (state, action: PayloadAction<ListsState | teaming.List>) => {
+      if (isListsState(action.payload)) return action.payload;
+      if (isList(action.payload))
+        state.entries[action.payload._id] = action.payload;
+    },
 
     createList: (
       state,

@@ -1,8 +1,9 @@
-import express from "express";
+import express, { Request, Response } from "express";
 import User from "../schema/User";
 import crypto from "crypto";
 import "dotenv/config";
 import jwt from "jsonwebtoken";
+import { teaming } from "../../../types";
 
 const loginRouter = express.Router();
 
@@ -32,6 +33,19 @@ loginRouter.post("/", async (req: express.Request, res: express.Response) => {
   }
 });
 export default loginRouter;
+
+export const authorize = (req: Request) => {
+  if (!process.env.SECRET_KEY) throw new Error("Unable to get key from .env");
+  const auth = req.get("Authorization");
+
+  if (!auth) throw new Error("No Authorization Header");
+  const [type, token] = auth.split(" ");
+  if (type !== "bearer")
+    throw new Error("Authorization Header not bearer type.");
+
+  const user = jwt.verify(token, process.env.SECRET_KEY) as teaming.User;
+  return user;
+};
 
 /*
 interface user {

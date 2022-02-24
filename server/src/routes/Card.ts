@@ -1,10 +1,13 @@
 import express from "express";
 import Card from "../schema/Card";
 import { Model } from "mongoose";
+import { authorize } from "./Login";
+import List from "../schema/List";
+import Board from "../schema/Board";
 const cardRouter = express.Router();
 
 // get all
-cardRouter.get("/", async (req:express.Request, res:express.Response) => {
+cardRouter.get("/", async (req: express.Request, res: express.Response) => {
   try {
     const cards = await Card.find();
     res.json(cards);
@@ -14,12 +17,20 @@ cardRouter.get("/", async (req:express.Request, res:express.Response) => {
 });
 
 // create one
-cardRouter.post("/", async (req:express.Request, res:express.Response) => {
- const cards = new Card({
-   _id: req.body.id,
-    content: req.body.content,
-  });
+cardRouter.post("/", async (req: express.Request, res: express.Response) => {
   try {
+    const user = authorize(req);
+    const list = await List.findById(req.body.listId);
+    if (!list) return res.sendStatus(409);
+    const board = await Board.findById(list.boardId);
+    if (!board || !board.collaborators.includes(user._id))
+      return res.sendStatus(409);
+    const cards = new Card({
+      _id: req.body._id,
+      content: req.body.content,
+      listId: req.body.listId,
+      pos: req.body.pos,
+    });
     const newCard = await cards.save();
     res.status(201).json(newCard);
   } catch (error: any) {
@@ -28,7 +39,7 @@ cardRouter.post("/", async (req:express.Request, res:express.Response) => {
 });
 
 // get one by id
-cardRouter.get("/:id", async (req:express.Request, res:express.Response) => {
+cardRouter.get("/:id", async (req: express.Request, res: express.Response) => {
   let cards: Model<any> | null = null;
   try {
     cards = await Card.findById(req.params.id);
@@ -42,30 +53,33 @@ cardRouter.get("/:id", async (req:express.Request, res:express.Response) => {
 });
 
 //delete
-cardRouter.delete("/:id", async (req:express.Request, res:express.Response) => {
-  let result = null;
+cardRouter.delete(
+  "/:id",
+  async (req: express.Request, res: express.Response) => {
+    let result = null;
 
-  result = await Card.findByIdAndDelete(req.params.id);
+    result = await Card.findByIdAndDelete(req.params.id);
 
-  if (result == null) {
-    return res.status(404).json({ message: "Cannot find the card !" });
+    if (result == null) {
+      return res.status(404).json({ message: "Cannot find the card !" });
+    }
+    res.json({ message: result });
   }
-  res.json({ message: result });
-});
+);
 
 // update one
-cardRouter.patch('/:id', async( req:express.Request,res:express.Response)=>{
-
+cardRouter.patch(
+  "/:id",
+  async (req: express.Request, res: express.Response) => {
     let result = null;
-    result = await Card.findByIdAndUpdate(req.params.id, req.body)
+    result = await Card.findByIdAndUpdate(req.params.id, req.body);
     if (result == null) {
-        return res.status(404).json({ message: "Cannot find the card !" });
-      }
-    res.json({message: result})
-
-})
+      return res.status(404).json({ message: "Cannot find the card !" });
+    }
+    res.json({ message: result });
+  }
+);
 export default cardRouter;
-
 
 /*
 interface card {

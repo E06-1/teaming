@@ -1,10 +1,12 @@
 import express from "express";
+import jwt from "jsonwebtoken";
 import { Model } from "mongoose";
+import { teaming } from "../../../types";
 import Board from "../schema/Board";
 const boardRouter = express.Router();
 
 // get all
-boardRouter.get("/", async (req:express.Request, res:express.Response) => {
+boardRouter.get("/", async (req: express.Request, res: express.Response) => {
   try {
     const board = await Board.find();
     res.json(board);
@@ -14,24 +16,30 @@ boardRouter.get("/", async (req:express.Request, res:express.Response) => {
 });
 
 // create one
-boardRouter.post("/", async (req:express.Request, res:express.Response) => {
- const list = new Board({
-   _id: req.body.id,
-    name: req.body.name,
-    lists: req.body.lists,
-    collaborators: req.body.collaborators,
-    admins: req.body.admins
-  });
+boardRouter.post("/", async (req: express.Request, res: express.Response) => {
+  if (!process.env.SECRET_KEY) throw new Error("Unable to get key from .env");
+  const auth = req.get("Authorization");
+
+  if (!auth) return res.sendStatus(400);
+  const [type, token] = auth.split(" ");
+  if (type !== "bearer") return res.sendStatus(400);
   try {
+    const user = jwt.verify(token, process.env.SECRET_KEY) as teaming.User;
+    const list = new Board({
+      _id: req.body._id,
+      name: req.body.name,
+      collaborators: [user._id],
+      admins: [user._id],
+    });
     const newList = await list.save();
-    res.status(201).json(newList);
+    res.status(201).json(newList.toObject());
   } catch (error: any) {
     res.status(400).json({ message: error });
   }
 });
 
 // get one by id
-boardRouter.get("/:id", async (req:express.Request, res:express.Response) => {
+boardRouter.get("/:id", async (req: express.Request, res: express.Response) => {
   let board: Model<any> | null = null;
   try {
     board = await Board.findById(req.params.id);
@@ -45,30 +53,33 @@ boardRouter.get("/:id", async (req:express.Request, res:express.Response) => {
 });
 
 //delete
-boardRouter.delete("/:id", async (req:express.Request, res:express.Response) => {
-  let result = null;
+boardRouter.delete(
+  "/:id",
+  async (req: express.Request, res: express.Response) => {
+    let result = null;
 
-  result = await Board.findByIdAndDelete(req.params.id);
+    result = await Board.findByIdAndDelete(req.params.id);
 
-  if (result == null) {
-    return res.status(404).json({ message: "Cannot find the board !" });
+    if (result == null) {
+      return res.status(404).json({ message: "Cannot find the board !" });
+    }
+    res.json({ message: result });
   }
-  res.json({ message: result });
-});
+);
 
 // update one
-boardRouter.patch('/:id', async( req:express.Request,res:express.Response)=>{
-
+boardRouter.patch(
+  "/:id",
+  async (req: express.Request, res: express.Response) => {
     let result = null;
-    result = await Board.findByIdAndUpdate(req.params.id, req.body)
+    result = await Board.findByIdAndUpdate(req.params.id, req.body);
     if (result == null) {
-        return res.status(404).json({ message: "Cannot find the board !" });
-      }
-    res.json({message: result})
-
-})
+      return res.status(404).json({ message: "Cannot find the board !" });
+    }
+    res.json({ message: result });
+  }
+);
 export default boardRouter;
-
 
 /*
 interface board {

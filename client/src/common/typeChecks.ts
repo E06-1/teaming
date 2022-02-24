@@ -190,7 +190,6 @@ export function isObjectWithKeys<T extends {}>(
 ): unknown is { [key in keyof typeof keys]: unknown } {
   if (!(typeof unknown === "object")) return false;
   if (unknown === null) return false;
-  if (Object.keys(unknown).length !== Object.keys(keys).length) return false;
   for (const key in keys) {
     if (!(key in unknown)) return false;
   }

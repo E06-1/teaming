@@ -1,6 +1,7 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 import type { RootState } from "../../app/store";
 import type { teaming } from "../../../../types";
+import { isBoard, isBoardsState } from "../../common/typeChecks";
 
 // Define Type of state
 export interface BoardsState {
@@ -19,7 +20,13 @@ export const boardSlice = createSlice({
   // `createSlice` will infer the state type from the `initialState` argument
   initialState,
   reducers: {
-    overwrite: (state, action: PayloadAction<BoardsState>) => action.payload,
+    overwrite: (state, action: PayloadAction<BoardsState | teaming.Board>) => {
+      if (isBoardsState(action.payload)) return action.payload;
+      if (isBoard(action.payload)) {
+        if (state.ids.includes(action.payload._id))
+          state.entries[action.payload._id] = action.payload;
+      }
+    },
 
     createBoard: (
       state,

@@ -17,7 +17,7 @@ import { overwrite as overwriteCardState } from "../features/card/cardsSlice";
 import { teaming } from "../../../types";
 import FormDialog from "../components/formDialog/FormDialog";
 import { Avatar, IconButton } from "@mui/material";
-import { logout, selectUser } from "../features/user/userSlice";
+import { logout, selectToken, selectUser } from "../features/user/userSlice";
 import Register from "../features/register/Register";
 
 function App() {
@@ -26,7 +26,7 @@ function App() {
   const handleLogout = () => {
     dispatch(logout());
   };
-  const user: any = useAppSelector(selectUser);
+  const user = useAppSelector(selectUser);
 
   //Load Boards from local storage if available, if not initialize an Empty Board
   useEffect(() => {
@@ -70,8 +70,6 @@ function App() {
         </h1>
         <div className="navPanel">
           {user === null ? (
-            <FormDialog />
-          ) : user.length === 0 ? (
             <FormDialog />
           ) : (
             <div>
